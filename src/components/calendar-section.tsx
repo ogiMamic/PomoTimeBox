@@ -7,6 +7,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { EventDropArg } from '@fullcalendar/core'
+import { EventResizeDoneArg } from '@fullcalendar/interaction'
 
 interface Task {
   id: string;
@@ -16,9 +17,10 @@ interface Task {
 interface CalendarSectionProps {
   events: any[];
   onEventDrop: (eventDropInfo: EventDropArg) => void;
-  onEventClick: (clickInfo: any) => void;
+  onEventClick: (clickInfo: { event: { id: string } }) => void;
   onDateSelect: (selectInfo: any) => void;
   onTaskDrop: (task: Task, date: Date) => void;
+  onEventResize: (eventResizeInfo: EventResizeDoneArg) => void;
 }
 
 export function CalendarSection({
@@ -26,8 +28,21 @@ export function CalendarSection({
   onEventDrop,
   onEventClick,
   onDateSelect,
-  onTaskDrop
+  onTaskDrop,
+  onEventResize
 }: CalendarSectionProps) {
+  const handleEventClick = (info: { event: { id: string } }) => {
+    onEventClick(info);
+  }
+
+  const handleEventDrop = (info: EventDropArg) => {
+    onEventDrop(info);
+  }
+
+  const handleEventResize = (info: EventResizeDoneArg) => {
+    onEventResize(info);
+  }
+
   return (
     <Card>
       <CardContent className="p-0">
@@ -45,9 +60,10 @@ export function CalendarSection({
           dayMaxEvents={true}
           weekends={true}
           events={events}
-          eventDrop={onEventDrop}
-          eventClick={onEventClick}
+          eventDrop={handleEventDrop}
+          eventClick={handleEventClick}
           select={onDateSelect}
+          eventResize={handleEventResize}
           height="auto"
           aspectRatio={1.35}
           expandRows={true}

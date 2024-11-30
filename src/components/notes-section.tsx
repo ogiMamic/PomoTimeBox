@@ -54,7 +54,7 @@ const DraggableNote: React.FC<{
 
   return (
     <div
-      ref={drag}
+      ref={drag as unknown as React.LegacyRef<HTMLDivElement>}
       className={`flex flex-col p-2 bg-card rounded-md ${
         isDragging ? 'opacity-50' : ''
       } ${isSelected ? 'ring-2 ring-primary' : ''} ${

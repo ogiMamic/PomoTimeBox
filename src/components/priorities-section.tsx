@@ -6,7 +6,9 @@ interface PrioritiesSectionProps {
   priorities: string[];
   onPriorityChange: (index: number, value: string) => void;
   language: {
-    priorities: string;
+    title: string;
+    addPriority: string;
+    add: string;
   };
 }
 
@@ -14,7 +16,7 @@ export function PrioritiesSection({ priorities, onPriorityChange, language }: Pr
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{language.priorities}</CardTitle>
+        <CardTitle>{language.title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -23,7 +25,7 @@ export function PrioritiesSection({ priorities, onPriorityChange, language }: Pr
               key={index}
               value={priority}
               onChange={(e) => onPriorityChange(index, e.target.value)}
-              placeholder={`${language.priorities} ${index + 1}`}
+              placeholder={`${language.add} ${index + 1}`}
             />
           ))}
         </div>

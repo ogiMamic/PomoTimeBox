@@ -13,21 +13,22 @@ import { PomodoroTimer } from './pomodoro-timer'
 import { TagSelector } from './tag-selector'
 import { TaskAnalytics } from './task-analytics'
 
-interface Tag {
+// Unified interfaces to be shared across components
+export interface Tag {
   id: string;
   name: string;
   color: string;
 }
 
-interface Task {
+export interface Task {
   id: string;
   content: string;
   completed: boolean;
-  tags: Tag[];
+  tags: Tag[];  // Ensure this is Tag[], not string[] | undefined
   duration?: number;
 }
 
-interface CalendarSlot {
+export interface CalendarSlot {
   time: string;
   tasks: Task[];
 }
@@ -53,6 +54,7 @@ const languages = {
       resume: "Resume",
       stop: "Stop",
       reset: "Reset",
+      currentTask: "Current Task",
     },
   },
   de: {
@@ -75,6 +77,7 @@ const languages = {
       resume: "Fortsetzen",
       stop: "Stopp",
       reset: "Zurücksetzen",
+      currentTask: "Aktuelle Aufgabe",
     },
   },
   sr: {
@@ -97,6 +100,7 @@ const languages = {
       resume: "Настави",
       stop: "Заустави",
       reset: "Ресетуј",
+      currentTask: "Тренутни задатак",
     },
   },
 }
@@ -118,7 +122,6 @@ export default function Timebox() {
   ]
 
   useEffect(() => {
-    // Initialize calendar slots
     const slots: CalendarSlot[] = []
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
@@ -129,8 +132,12 @@ export default function Timebox() {
     setCalendarSlots(slots)
   }, [])
 
-  const handlePriorityChange = (newPriorities: string[]) => {
-    setPriorities(newPriorities)
+  const handlePriorityChange = (index: number, value: string) => {
+    setPriorities(prev => {
+      const newPriorities = [...prev]
+      newPriorities[index] = value
+      return newPriorities
+    })
     setHasUnsavedChanges(true)
   }
 
@@ -200,7 +207,6 @@ export default function Timebox() {
   }
 
   const handleSave = () => {
-    // Implement save functionality here
     console.log('Saving data:', { priorities, notes, calendarSlots })
     setHasUnsavedChanges(false)
   }

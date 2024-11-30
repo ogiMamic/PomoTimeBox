@@ -4,12 +4,7 @@ import React, { useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { useDrop, useDrag, DropTargetMonitor, DragSourceMonitor } from 'react-dnd'
 import { GripVertical } from 'lucide-react'
-
-interface Task {
-  id: string;
-  content: string;
-  completed: boolean;
-}
+import { Task, Tag } from './timebox';
 
 interface CalendarSlot {
   time: string;
@@ -20,16 +15,17 @@ interface DailyCalendarProps {
   slots: CalendarSlot[];
   onTaskDrop: (task: Task, time: string) => void;
   onTaskMove: (taskId: string, fromTime: string, toTime: string) => void;
-  onTaskUpdate: (taskId: string, newContent: string) => void;
-  onTaskSelect: (task: Task) => void;
+  onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
+    onTaskSelect: (task: Task) => void;
   selectedTask: Task | null;
+  availableTags: Tag[];
 }
 
 const CalendarTask: React.FC<{ 
   task: Task; 
   time: string; 
   onTaskMove: (taskId: string, fromTime: string, toTime: string) => void;
-  onTaskUpdate: (taskId: string, newContent: string) => void;
+  onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onTaskSelect: (task: Task) => void;
   isSelected: boolean;
 }> = ({ task, time, onTaskMove, onTaskUpdate, onTaskSelect, isSelected }) => {
@@ -51,13 +47,17 @@ const CalendarTask: React.FC<{
   const handleBlur = () => {
     setIsEditing(false);
     if (editedContent !== task.content) {
-      onTaskUpdate(task.id, editedContent);
+      onTaskUpdate(task.id, { content: editedContent });
     }
+  };
+
+  const handleTaskUpdate = (taskId: string, newContent: string) => {
+    onTaskUpdate(taskId, { content: newContent });
   };
 
   return (
     <div
-      ref={drag}
+      ref={drag as unknown as React.LegacyRef<HTMLDivElement>}
       className={`mt-1 p-1 bg-primary text-primary-foreground rounded flex items-center justify-between ${
         isDragging ? 'opacity-50' : ''
       } ${isSelected ? 'ring-2 ring-accent' : ''} ${
@@ -87,7 +87,7 @@ const CalendarSlot: React.FC<{
   slot: CalendarSlot; 
   onTaskDrop: (task: Task, time: string) => void; 
   onTaskMove: (taskId: string, fromTime: string, toTime: string) => void;
-  onTaskUpdate: (taskId: string, newContent: string) => void;
+  onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onTaskSelect: (task: Task) => void;
   selectedTask: Task | null;
 }> = ({ slot, onTaskDrop, onTaskMove, onTaskUpdate, onTaskSelect, selectedTask }) => {
@@ -107,7 +107,7 @@ const CalendarSlot: React.FC<{
 
   return (
     <div
-      ref={dropRef}
+      ref={dropRef as unknown as React.LegacyRef<HTMLDivElement>}
       className={`p-2 border-b border-border min-h-[60px] ${isOver ? 'bg-accent' : ''}`}
     >
       <div className="text-sm text-muted-foreground">{slot.time}</div>
@@ -126,7 +126,7 @@ const CalendarSlot: React.FC<{
   );
 };
 
-export function DailyCalendar({ slots, onTaskDrop, onTaskMove, onTaskUpdate, onTaskSelect, selectedTask }: DailyCalendarProps) {
+export function DailyCalendar({ slots, onTaskDrop, onTaskMove, onTaskUpdate, onTaskSelect, selectedTask, availableTags }: DailyCalendarProps) {
   return (
     <Card>
       <CardContent className="p-0">
